@@ -8,6 +8,6 @@ namespace CasaDoCodigo.Repositories
 {
     public interface ICadastroRepository
     {
-        Cadastro Update(int cadastroId, Cadastro novoCadastro);
+        Task<Cadastro> UpdateAsync(int cadastroId, Cadastro novoCadastro);
     }
 }

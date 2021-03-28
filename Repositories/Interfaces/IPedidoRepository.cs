@@ -8,10 +8,9 @@ namespace CasaDoCodigo.Repositories
 {
     public interface IPedidoRepository
     {
-        Pedido GetPedido();
-        void AddItem(string codigo);
-        UpdateQuantidadeResponse UpdateQuantidade(ItemPedido itemPedido);
-
-        Pedido UpdateCadastro(Cadastro cadastro);
+        Task<Pedido> GetPedidoAsync();
+        Task AddItemAsync(string codigo);
+        Task<UpdateQuantidadeResponse> UpdateQuantidadeAsync(ItemPedido itemPedido);
+        Task<Pedido> UpdateCadastroAsync(Cadastro cadastro);
     }
 }

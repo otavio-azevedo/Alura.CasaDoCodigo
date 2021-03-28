@@ -1,40 +1,39 @@
 ﻿using CasaDoCodigo.Models;
 using CasaDoCodigo.Repositories;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CasaDoCodigo
 {
     public class DataService : IDataService
     {
-        private readonly ApplicationContext contexto;
-        private readonly IProdutoRepository produtoRepository;
-
-        public DataService(ApplicationContext contexto, IProdutoRepository produtoRepository)
+        public async Task InicializaDBAsync(IServiceProvider provider)
         {
-            this.contexto = contexto;
-            this.produtoRepository = produtoRepository;
+            var contexto = provider.GetService<ApplicationContext>();
+
+            await contexto.Database.MigrateAsync();
+
+            if (await contexto.Set<Produto>().AnyAsync())
+            {
+                return;
+            }
+
+            List<Livro> livros = await GetLivrosAsync();
+
+            var produtoRepository = provider.GetService<IProdutoRepository>();
+            await produtoRepository.SaveProdutosAsync(livros);
         }
 
-        public void InicializaDB()
+        private async Task<List<Livro>> GetLivrosAsync()
         {
-            contexto.Database.EnsureCreated();
-            List<Livro> livros = GetLivros();
-            produtoRepository.SaveProdutos(livros);
+            var json = await File.ReadAllTextAsync("livros.json");
+            return JsonConvert.DeserializeObject<List<Livro>>(json);
         }
-
-        private static List<Livro> GetLivros()
-        {
-            var json = File.ReadAllText("livros.json");
-            var livros = JsonConvert.DeserializeObject<List<Livro>>(json);
-            return livros;
-        }
-
-        
-
     }
 }

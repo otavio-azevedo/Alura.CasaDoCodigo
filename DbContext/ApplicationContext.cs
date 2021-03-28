@@ -17,6 +17,8 @@ namespace CasaDoCodigo
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Categoria>().HasKey(x=>x.Id);
+
             modelBuilder.Entity<Produto>().HasKey(x => x.Id);
 
             modelBuilder.Entity<Pedido>().HasKey(x => x.Id);
