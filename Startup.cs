@@ -44,7 +44,7 @@ namespace CasaDoCodigo
 
             //Configuração/registro do serviço de inicialização do DB
             services.AddTransient<IDataService, DataService>();
-            
+
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             //Configuração/registro sessionhelper
             services.AddTransient<IHttpHelper, HttpHelper>();
@@ -54,6 +54,30 @@ namespace CasaDoCodigo
             services.AddTransient<IPedidoRepository, PedidoRepository>();
             services.AddTransient<ICadastroRepository, CadastroRepository>();
             services.AddApplicationInsightsTelemetry();
+
+            #region Info
+            /*
+             * MICROSOFT: https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade
+                - Adiciona registro de aplicativo, definir a url de redirecionamento http://localhost:50849/signin-microsoft
+                - Pegar ID do aplicativo gerado (ClientID)
+                - Gerenciar > Certificados e segredos: cria novo segredo, pegar o Valor gerado (ClientSecret)
+            * GOOGLE: https://developers.google.com/identity/sign-in/web/sign-in
+                - Metodologia praticamente igual ao anterior
+             */
+
+            #endregion
+            //Login Externo OAuth2.0
+            services.AddAuthentication()
+                .AddMicrosoftAccount(options =>
+                {
+                    options.ClientId = Configuration["ExternalLogin:Microsoft:ClientId"];
+                    options.ClientSecret = Configuration["ExternalLogin:Microsoft:ClientSecret"];
+                })
+                .AddGoogle(options =>
+                {
+                    options.ClientId = Configuration["ExternalLogin:Google:ClientId"];
+                    options.ClientSecret = Configuration["ExternalLogin:Google:ClientSecret"];
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
